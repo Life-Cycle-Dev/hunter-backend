@@ -1,23 +1,14 @@
 
 services:
-  server:
-    build:
-      context: .
-    env_file:
-      - ./.env
-    ports:
-      - "9005:9000"
+  go-app:
+    build: .
     restart: always
+    ports:
+      - "9005:8080"
     volumes:
-      - ./model:/mnt/model
-      - ./router:/mnt/router
-      - ./util:/mnt/util
-      - ./alembic:/mnt/alembic
-      - ./app.py:/mnt/app.py
-      - ./secret:/mnt/secret
-      - ./static:/mnt/static
-    environment:
-      SERVICE_NAME: "hunter-server"
+      - ./secret:/secret
+    env_file:
+      - .env
 
 networks:
   default:

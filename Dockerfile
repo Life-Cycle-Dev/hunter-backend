@@ -1,14 +1,11 @@
-FROM python:3.10
+FROM golang:1.24
 
-WORKDIR /mnt
+WORKDIR /app
+
 COPY . .
-COPY .env /mnt/.env
 
-RUN apt-get update && apt-get install -y default-mysql-client pdftk-java
+RUN go build -o main ./cmd
 
-RUN python -m pip install --upgrade pip setuptools
-RUN pip install -r requirements.txt
+EXPOSE 9000
 
-RUN chmod +x run.sh
-
-CMD ["./run.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
