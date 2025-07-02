@@ -87,8 +87,6 @@ jobs:
           git fetch --all 
           git reset --hard origin/dev 
 
-          docker system prune
-          docker image prune -a -f
           docker compose up --build -d
 
           exit
