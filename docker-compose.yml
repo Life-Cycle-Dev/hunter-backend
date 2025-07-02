@@ -4,7 +4,7 @@ services:
     build: .
     restart: always
     ports:
-      - "9005:8080"
+      - "9005:9000"
     volumes:
       - ./secret:/secret
     env_file:
