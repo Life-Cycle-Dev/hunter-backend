@@ -73,7 +73,7 @@ jobs:
           cat ./.env | ssh -o ProxyCommand="cloudflared access ssh --hostname ${{ secrets.CLOUDFLARED_SSH_HOST }}" \
             -o StrictHostKeyChecking=no \
             -o UserKnownHostsFile=/dev/null \
-            ${{ secrets.CLOUDFLARED_SSH_USER }}@${{ secrets.CLOUDFLARED_SSH_HOST }} 'cat > ~/server/hunter-backend/.env'
+            ${{ secrets.CLOUDFLARED_SSH_USER }}@${{ secrets.CLOUDFLARED_SSH_HOST }} 'cat > ~/server/dev/hunter-backend/.env'
 
       - name: Access Server
         run: |
