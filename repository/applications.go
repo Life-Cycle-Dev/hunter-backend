@@ -9,14 +9,33 @@ import (
 
 type ApplicationsRepository interface {
 	CreateApplication(applicationEnt *entity.Applications) (*entity.Applications, error)
-
 	ListApplications(offset int, limit int, query string) ([]*entity.Applications, int64, error)
+
+	FindById(id string) (*entity.Applications, error)
+	UpdateApplication(ent *entity.Applications) (*entity.Applications, error)
 }
 
 type applicationsRepository struct {
 	db                  *gorm.DB
 	config              config.AppConfig
 	encryptorRepository EncryptorRepository
+}
+
+func (a applicationsRepository) UpdateApplication(ent *entity.Applications) (*entity.Applications, error) {
+	result := a.db.Updates(ent)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return ent, nil
+}
+
+func (a applicationsRepository) FindById(id string) (*entity.Applications, error) {
+	var ent entity.Applications
+	result := a.db.First(&ent, "id = ?", id)
+	if result.Error != nil {
+		return &entity.Applications{}, result.Error
+	}
+	return &ent, nil
 }
 
 func (a applicationsRepository) CreateApplication(applicationEnt *entity.Applications) (*entity.Applications, error) {

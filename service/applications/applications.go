@@ -10,6 +10,8 @@ import (
 type ApplicationsService interface {
 	HandlerCreateApplication(c *fiber.Ctx) error
 	HandlerListApplication(c *fiber.Ctx) error
+	HandlerGetApplicationById(c *fiber.Ctx) error
+	HandlerUpdateApplicationById(c *fiber.Ctx) error
 }
 
 type applicationsService struct {
