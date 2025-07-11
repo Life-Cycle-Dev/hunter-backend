@@ -12,6 +12,9 @@ func AutoMigrate(db *gorm.DB) error {
 		&entity.OneTimePassword{},
 		&entity.Notification{},
 		&entity.Users{},
+		&entity.Permission{},
+		&entity.Role{},
+		&entity.RoleToPermission{},
 		&entity.Applications{})
 	if err != nil {
 		return err

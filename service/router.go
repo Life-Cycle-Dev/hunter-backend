@@ -10,6 +10,7 @@ import (
 	authService "hunter-backend/service/auth"
 	healthCheckService "hunter-backend/service/health_check"
 	"hunter-backend/service/middleware"
+	permissionService "hunter-backend/service/permission"
 )
 
 func InitRouter(server *fiber.App) {
@@ -38,4 +39,11 @@ func InitRouter(server *fiber.App) {
 	applicationProtected.Get("/list", application.HandlerListApplication)
 	applicationProtected.Get("/:id", application.HandlerGetApplicationById)
 	applicationProtected.Put("/:id", application.HandlerUpdateApplicationById)
+
+	permission := permissionService.ProvidePermissionService(db, appConfig)
+	permissionProtected := server.Group("/permission", middleware.RequireAuth(db, appConfig, entity.JsonWebTokenAccessToken))
+	permissionProtected.Post("/create", permission.HandlerCreatePermission)
+	permissionProtected.Get("/list", permission.HandlerListPermission)
+	permissionProtected.Get("/:id", permission.HandlerGetPermissionById)
+	permissionProtected.Put("/:id", permission.HandlerUpdatePermission)
 }

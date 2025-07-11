@@ -1,11 +1,11 @@
-package applicationsService
+package permissionService
 
 import (
 	"github.com/gofiber/fiber/v2"
 	"strconv"
 )
 
-func (a applicationsService) HandlerListApplication(c *fiber.Ctx) error {
+func (p permissionService) HandlerListPermission(c *fiber.Ctx) error {
 	pageStr := c.Query("page", "1")
 	perPageStr := c.Query("perPage", "10")
 	query := c.Query("query")
@@ -22,7 +22,7 @@ func (a applicationsService) HandlerListApplication(c *fiber.Ctx) error {
 
 	offset := (page - 1) * perPage
 
-	apps, total, err := a.applicationsRepository.ListApplications(offset, perPage, query)
+	permissions, total, err := p.permissionRepository.ListPermissions(offset, perPage, query)
 	if err != nil {
 		panic(err)
 	}
@@ -30,7 +30,7 @@ func (a applicationsService) HandlerListApplication(c *fiber.Ctx) error {
 	totalPages := (int(total) + perPage - 1) / perPage
 
 	return c.JSON(fiber.Map{
-		"data": apps,
+		"data": permissions,
 		"pagination": fiber.Map{
 			"page":       page,
 			"per_page":   perPage,
