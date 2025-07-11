@@ -14,12 +14,44 @@ type PermissionRepository interface {
 
 	GetByMapping(mapping string) (*entity.Permission, error)
 	GetById(id string) (*entity.Permission, error)
+	GetByIds(ids []string) ([]entity.Permission, error)
+	GetByRoleId(roleId string) ([]entity.Permission, error)
 }
 
 type permissionRepository struct {
 	db                  *gorm.DB
 	config              config.AppConfig
 	encryptorRepository EncryptorRepository
+}
+
+func (p permissionRepository) GetByRoleId(roleId string) ([]entity.Permission, error) {
+	var ent []entity.RoleToPermission
+	db := p.db.Model(&entity.RoleToPermission{})
+	result := db.Where("role_id = ?", roleId).Find(&ent)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	var permissionIds []string
+	for _, permission := range ent {
+		permissionIds = append(permissionIds, permission.PermissionId)
+	}
+
+	permissionsEnt, err := p.GetByIds(permissionIds)
+	if err != nil {
+		return nil, err
+	}
+
+	return permissionsEnt, nil
+}
+
+func (p permissionRepository) GetByIds(ids []string) ([]entity.Permission, error) {
+	var ent []entity.Permission
+	result := p.db.Where("id IN ?", ids).Find(&ent)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return ent, nil
 }
 
 func (p permissionRepository) UpdatePermission(ent *entity.Permission) (*entity.Permission, error) {

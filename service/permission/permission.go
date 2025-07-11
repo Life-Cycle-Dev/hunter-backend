@@ -12,6 +12,9 @@ type PermissionService interface {
 	HandlerGetPermissionById(c *fiber.Ctx) error
 	HandlerListPermission(c *fiber.Ctx) error
 	HandlerUpdatePermission(c *fiber.Ctx) error
+	HandlerCreateRole(c *fiber.Ctx) error
+	HandlerGetRoleById(c *fiber.Ctx) error
+	HandlerListRole(c *fiber.Ctx) error
 }
 
 type permissionService struct {
@@ -19,15 +22,18 @@ type permissionService struct {
 	config               config.AppConfig
 	encryptorRepository  repository.EncryptorRepository
 	permissionRepository repository.PermissionRepository
+	roleRepository       repository.RoleRepository
 }
 
 func ProvidePermissionService(db *gorm.DB, config config.AppConfig) PermissionService {
 	encryptorRepository := repository.ProvideEncryptorRepository(db, config)
 	permissionRepository := repository.ProvidePermissionRepository(db, config)
+	roleRepository := repository.ProvideRoleRepository(db, config)
 	return &permissionService{
 		db:                   db,
 		config:               config,
 		encryptorRepository:  encryptorRepository,
 		permissionRepository: permissionRepository,
+		roleRepository:       roleRepository,
 	}
 }

@@ -46,4 +46,9 @@ func InitRouter(server *fiber.App) {
 	permissionProtected.Get("/list", permission.HandlerListPermission)
 	permissionProtected.Get("/:id", permission.HandlerGetPermissionById)
 	permissionProtected.Put("/:id", permission.HandlerUpdatePermission)
+
+	roleProtected := server.Group("/role", middleware.RequireAuth(db, appConfig, entity.JsonWebTokenAccessToken))
+	roleProtected.Post("/create", permission.HandlerCreateRole)
+	roleProtected.Get("/list", permission.HandlerListRole)
+	roleProtected.Get("/:id", permission.HandlerGetRoleById)
 }
