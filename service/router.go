@@ -33,5 +33,7 @@ func InitRouter(server *fiber.App) {
 	refreshProtected.Post("/", auth.HandlerRefreshAccessToken)
 
 	application := applicationsService.ProvideApplicationsService(db, appConfig)
-	server.Post("/application/create", application.HandlerCreateApplication)
+	applicationProtected := server.Group("/application", middleware.RequireAuth(db, appConfig, entity.JsonWebTokenAccessToken))
+	applicationProtected.Post("/create", application.HandlerCreateApplication)
+	applicationProtected.Get("/list", application.HandlerListApplication)
 }
