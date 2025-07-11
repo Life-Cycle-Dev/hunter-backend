@@ -25,11 +25,16 @@ func (a applicationsService) HandlerCreateApplication(c *fiber.Ctx) error {
 		Title:       request.Title,
 		Description: request.Description,
 		ImageUrl:    request.ImageUrl,
-		Active:      request.Active,
 	})
 	if err != nil {
 		panic(err)
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(ent)
+	ent.Active = request.Active
+	updatedEnt, err := a.applicationsRepository.UpdateApplication(ent)
+	if err != nil {
+		panic(err)
+	}
+
+	return c.Status(fiber.StatusCreated).JSON(updatedEnt)
 }
