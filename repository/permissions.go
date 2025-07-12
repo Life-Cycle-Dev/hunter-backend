@@ -11,7 +11,9 @@ type PermissionRepository interface {
 	CreatePermission(ent *entity.Permission) (*entity.Permission, error)
 	UpdatePermission(ent *entity.Permission) (*entity.Permission, error)
 	ListPermissions(offset int, limit int, query string) ([]*entity.Permission, int64, error)
+	UnlinkPermissionByRoleId(roleId string) error
 
+	CreateRoleToPermission(roleId string, permissionIds []string) ([]*entity.RoleToPermission, error)
 	GetByMapping(mapping string) (*entity.Permission, error)
 	GetById(id string) (*entity.Permission, error)
 	GetByIds(ids []string) ([]entity.Permission, error)
@@ -22,6 +24,32 @@ type permissionRepository struct {
 	db                  *gorm.DB
 	config              config.AppConfig
 	encryptorRepository EncryptorRepository
+}
+
+func (p permissionRepository) CreateRoleToPermission(roleId string, permissionIds []string) ([]*entity.RoleToPermission, error) {
+	roleToPermissions := make([]*entity.RoleToPermission, 0, len(permissionIds))
+	for _, pid := range permissionIds {
+		roleToPermissions = append(roleToPermissions, &entity.RoleToPermission{
+			RoleId:       roleId,
+			PermissionId: pid,
+		})
+	}
+
+	if len(roleToPermissions) > 0 {
+		if err := p.db.Create(&roleToPermissions).Error; err != nil {
+			return nil, err
+		}
+	}
+
+	return roleToPermissions, nil
+}
+
+func (p permissionRepository) UnlinkPermissionByRoleId(roleId string) error {
+	result := p.db.Where("role_id = ?", roleId).Delete(&entity.RoleToPermission{})
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
 }
 
 func (p permissionRepository) GetByRoleId(roleId string) ([]entity.Permission, error) {

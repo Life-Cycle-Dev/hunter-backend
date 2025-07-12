@@ -15,6 +15,7 @@ type PermissionService interface {
 	HandlerCreateRole(c *fiber.Ctx) error
 	HandlerGetRoleById(c *fiber.Ctx) error
 	HandlerListRole(c *fiber.Ctx) error
+	HandlerUpdateRole(c *fiber.Ctx) error
 }
 
 type permissionService struct {
