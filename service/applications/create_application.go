@@ -25,6 +25,7 @@ func (a applicationsService) HandlerCreateApplication(c *fiber.Ctx) error {
 		Title:       request.Title,
 		Description: request.Description,
 		ImageUrl:    request.ImageUrl,
+		Active:      request.Active,
 	})
 	if err != nil {
 		panic(err)
