@@ -95,7 +95,53 @@ func RequireAuth(db *gorm.DB, config config.AppConfig, tokenType entity.JsonToke
 			})
 		}
 
+		roleRepository := repository.ProvideRoleRepository(db, config)
+		if user.RoleId == "" {
+			userRole, err := roleRepository.FindByMapping("user")
+			if userRole.ID == "" {
+				userRoleEnt := &entity.Role{
+					Title:   "User",
+					Mapping: "user",
+				}
+				userRole, err = roleRepository.CreateRole(userRoleEnt, nil)
+				if err != nil {
+					return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+						"error": "Cannot create user role",
+					})
+				}
+			}
+			user.RoleId = userRole.ID
+			user, err = accountRepository.UpdateUser(user)
+			if err != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"error": "Cannot update user",
+				})
+			}
+		}
+
+		role, err := roleRepository.FindById(user.RoleId)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Cannot get user role",
+			})
+		}
+
+		permissionRepository := repository.ProvidePermissionRepository(db, config)
+		permissions, err := permissionRepository.GetByRoleId(role.ID)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "Cannot get permissions",
+			})
+		}
+
+		permissionNames := make([]string, len(permissions))
+		for _, permission := range permissions {
+			permissionNames = append(permissionNames, permission.Mapping)
+		}
+
 		c.Locals("user", user)
+		c.Locals("role", role)
+		c.Locals("permissions", permissionNames)
 		c.Locals("token", jwtEnt)
 		return c.Next()
 	}

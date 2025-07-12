@@ -12,28 +12,32 @@ type Users struct {
 	HashedPassword  EncryptedField `json:"hashed_password" gorm:"type:varbinary(512)" validate:"required"`
 	IsEmailVerified bool           `json:"is_email_verified" gorm:"type:boolean;default:false"`
 	IsDeveloper     bool           `json:"is_developer" gorm:"type:boolean;default:false"`
-	PermissionId    string         `json:"permission_id" gorm:"type:varchar(255);"`
+	RoleId          string         `json:"role_id" gorm:"type:varchar(255);"`
 	CreatedAt       time.Time      `json:"created_at"`
 	UpdatedAt       time.Time      `json:"updated_at"`
 	DeletedAt       gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 }
 
 type UserResponse struct {
-	ID              string `json:"id"`
-	Name            string `json:"name"`
-	Email           string `json:"email"`
-	IsDeveloper     bool   `json:"is_developer"`
-	IsEmailVerified bool   `json:"is_email_verified"`
-	CreatedAt       string `json:"created_at"`
+	ID              string   `json:"id"`
+	Name            string   `json:"name"`
+	Email           string   `json:"email"`
+	IsDeveloper     bool     `json:"is_developer"`
+	IsEmailVerified bool     `json:"is_email_verified"`
+	Role            string   `json:"role"`
+	Permissions     []string `json:"permissions"`
+	CreatedAt       string   `json:"created_at"`
 }
 
-func (e *Users) ToResponse(decrypt func(EncryptedField) string) UserResponse {
+func (e *Users) ToResponse(decrypt func(EncryptedField) string, role string, permissions []string) UserResponse {
 	return UserResponse{
 		ID:              e.ID,
 		Name:            decrypt(e.Name),
 		Email:           decrypt(e.Email),
 		IsDeveloper:     e.IsDeveloper,
 		IsEmailVerified: e.IsEmailVerified,
+		Role:            role,
+		Permissions:     permissions,
 		CreatedAt:       e.CreatedAt.Format(time.RFC3339),
 	}
 }

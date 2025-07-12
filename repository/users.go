@@ -22,6 +22,7 @@ type userRepository struct {
 	db                  *gorm.DB
 	config              config.AppConfig
 	encryptorRepository EncryptorRepository
+	roleRepository      RoleRepository
 }
 
 func (u userRepository) FindById(id string) (*entity.Users, error) {
@@ -52,6 +53,19 @@ func (u userRepository) CreateUser(ent *entity.Users) (*entity.Users, error) {
 		return nil, err
 	}
 	ent.ID = id
+
+	userRole, err := u.roleRepository.FindByMapping("user")
+	if userRole.ID == "" {
+		userRoleEnt := &entity.Role{
+			Title:   "User",
+			Mapping: "user",
+		}
+		userRole, err = u.roleRepository.CreateRole(userRoleEnt, nil)
+		if err != nil {
+			return nil, err
+		}
+	}
+	ent.RoleId = userRole.ID
 
 	result := u.db.Create(ent)
 	if result.Error != nil {
@@ -96,9 +110,11 @@ func (u userRepository) SignUpWithPassword(ent *entity.Users, password string) (
 
 func ProvideUserRepository(db *gorm.DB, config config.AppConfig) UserRepository {
 	encryptorRepository := ProvideEncryptorRepository(db, config)
+	roleRepository := ProvideRoleRepository(db, config)
 	return &userRepository{
 		db:                  db,
 		config:              config,
 		encryptorRepository: encryptorRepository,
+		roleRepository:      roleRepository,
 	}
 }
