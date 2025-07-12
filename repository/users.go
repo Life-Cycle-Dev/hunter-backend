@@ -12,6 +12,7 @@ type UserRepository interface {
 	CreateUser(ent *entity.Users) (*entity.Users, error)
 	UpdateUser(ent *entity.Users) (*entity.Users, error)
 	SignUpWithPassword(ent *entity.Users, password string) (*entity.Users, error)
+	ListUser(offset int, limit int, query string) ([]*entity.Users, int64, error)
 
 	CheckPassword(hashedPassword entity.EncryptedField, plainPassword string) error
 	FindByEmail(email entity.EncryptedField) (*entity.Users, error)
@@ -23,6 +24,28 @@ type userRepository struct {
 	config              config.AppConfig
 	encryptorRepository EncryptorRepository
 	roleRepository      RoleRepository
+}
+
+func (u userRepository) ListUser(offset int, limit int, query string) ([]*entity.Users, int64, error) {
+	var users []*entity.Users
+	var total int64
+
+	db := u.db.Model(&entity.Users{})
+
+	if query != "" {
+		encryptQuery := u.encryptorRepository.Encrypt(query)
+		db = db.Where("name = ? OR email = ?", encryptQuery, encryptQuery)
+	}
+
+	if err := db.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	if err := db.Offset(offset).Limit(limit).Find(&users).Error; err != nil {
+		return nil, 0, err
+	}
+
+	return users, total, nil
 }
 
 func (u userRepository) FindById(id string) (*entity.Users, error) {
