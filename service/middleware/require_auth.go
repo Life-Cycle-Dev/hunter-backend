@@ -134,7 +134,7 @@ func RequireAuth(db *gorm.DB, config config.AppConfig, tokenType entity.JsonToke
 			})
 		}
 
-		permissionNames := make([]string, len(permissions))
+		var permissionNames []string
 		for _, permission := range permissions {
 			permissionNames = append(permissionNames, permission.Mapping)
 		}
