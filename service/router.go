@@ -57,4 +57,5 @@ func InitRouter(server *fiber.App) {
 	user := userService.ProvideUserService(db, appConfig)
 	userProtected := server.Group("/user", middleware.RequireAuth(db, appConfig, entity.JsonWebTokenAccessToken))
 	userProtected.Get("/list", user.HandlerListUser)
+	userProtected.Get("/:id", user.HandlerGetUser)
 }
