@@ -6,6 +6,7 @@ type AppConfig struct {
 	ServerConfig   ServerConfig
 	DatabaseConfig DatabaseConfig
 	EmailConfig    EmailConfig
+	S3Config       S3Config
 }
 
 type ServerConfig struct {
@@ -29,10 +30,18 @@ type EmailConfig struct {
 	Password string `envconfig:"SMTP_PASSWORD" default:"localhost"`
 }
 
+type S3Config struct {
+	S3Endpoint       string `envconfig:"S3_ENDPOINT" default:""`
+	S3PublicEndpoint string `envconfig:"S3_PUBLIC_ENDPOINT" default:""`
+	S3AccessKey      string `envconfig:"S3_ACCESS_KEY" default:""`
+	S3SecretKey      string `envconfig:"S3_SECRET_KEY" default:""`
+}
+
 func GetConfig() AppConfig {
 	var app AppConfig
 	envconfig.MustProcess("APP", &app.ServerConfig)
 	envconfig.MustProcess("APP", &app.DatabaseConfig)
 	envconfig.MustProcess("APP", &app.EmailConfig)
+	envconfig.MustProcess("APP", &app.S3Config)
 	return app
 }

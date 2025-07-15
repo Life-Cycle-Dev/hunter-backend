@@ -11,6 +11,7 @@ import (
 	healthCheckService "hunter-backend/service/health_check"
 	"hunter-backend/service/middleware"
 	permissionService "hunter-backend/service/permission"
+	uploadService "hunter-backend/service/upload"
 	userService "hunter-backend/service/user"
 )
 
@@ -58,4 +59,8 @@ func InitRouter(server *fiber.App) {
 	userProtected := server.Group("/user", middleware.RequireAuth(db, appConfig, entity.JsonWebTokenAccessToken))
 	userProtected.Get("/list", user.HandlerListUser)
 	userProtected.Get("/:id", user.HandlerGetUser)
+	userProtected.Put("/:id", user.HandlerUpdateUserById)
+
+	upload := uploadService.ProvideUploadService(db, appConfig)
+	server.Post("/upload", upload.HandlerUploadFile)
 }

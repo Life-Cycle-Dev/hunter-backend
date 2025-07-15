@@ -10,6 +10,7 @@ import (
 type UserService interface {
 	HandlerListUser(c *fiber.Ctx) error
 	HandlerGetUser(c *fiber.Ctx) error
+	HandlerUpdateUserById(c *fiber.Ctx) error
 }
 
 type userService struct {
