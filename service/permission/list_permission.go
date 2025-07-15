@@ -7,8 +7,8 @@ import (
 )
 
 func (p permissionService) HandlerListPermission(c *fiber.Ctx) error {
-	permissions := c.Locals("permissions").([]string)
-	err := util.CheckAllow(permissions, "permission-view")
+	userPermissions := c.Locals("permissions").([]string)
+	err := util.CheckAllow(userPermissions, "permission-view")
 	if err != nil {
 		panic(err)
 	}
