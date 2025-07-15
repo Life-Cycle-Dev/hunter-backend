@@ -2,10 +2,17 @@ package applicationsService
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"hunter-backend/util"
 	"strconv"
 )
 
 func (a applicationsService) HandlerListApplication(c *fiber.Ctx) error {
+	permissions := c.Locals("permissions").([]string)
+	err := util.CheckAllow(permissions, "application-view")
+	if err != nil {
+		panic(err)
+	}
+
 	pageStr := c.Query("page", "1")
 	perPageStr := c.Query("perPage", "10")
 	query := c.Query("query")

@@ -11,11 +11,16 @@ type UpdatePermissionRequest struct {
 }
 
 func (p permissionService) HandlerUpdatePermission(c *fiber.Ctx) error {
-	id := c.Params("id")
+	permissions := c.Locals("permissions").([]string)
+	err := util.CheckAllow(permissions, "permission-modify")
+	if err != nil {
+		panic(err)
+	}
 
+	id := c.Params("id")
 	var request UpdatePermissionRequest
 
-	err := util.ValidateRequest(c, &request)
+	err = util.ValidateRequest(c, &request)
 	if err != nil {
 		panic(err)
 	}

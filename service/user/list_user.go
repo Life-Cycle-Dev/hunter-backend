@@ -2,10 +2,17 @@ package userService
 
 import (
 	"github.com/gofiber/fiber/v2"
+	"hunter-backend/util"
 	"strconv"
 )
 
 func (u userService) HandlerListUser(c *fiber.Ctx) error {
+	userPermissions := c.Locals("permissions").([]string)
+	err := util.CheckAllow(userPermissions, "user-view")
+	if err != nil {
+		panic(err)
+	}
+
 	pageStr := c.Query("page", "1")
 	perPageStr := c.Query("perPage", "10")
 	query := c.Query("query")

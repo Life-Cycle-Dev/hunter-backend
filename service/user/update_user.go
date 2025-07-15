@@ -15,11 +15,17 @@ type UpdateUpdateUserRequest struct {
 }
 
 func (u userService) HandlerUpdateUserById(c *fiber.Ctx) error {
+	userPermissions := c.Locals("permissions").([]string)
+	err := util.CheckAllow(userPermissions, "user-modify")
+	if err != nil {
+		panic(err)
+	}
+
 	id := c.Params("id")
 
 	var request UpdateUpdateUserRequest
 
-	err := util.ValidateRequest(c, &request)
+	err = util.ValidateRequest(c, &request)
 	if err != nil {
 		panic(err)
 	}

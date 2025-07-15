@@ -13,9 +13,15 @@ type CreateRoleRequest struct {
 }
 
 func (p permissionService) HandlerCreateRole(c *fiber.Ctx) error {
+	permissions := c.Locals("permissions").([]string)
+	err := util.CheckAllow(permissions, "role-modify")
+	if err != nil {
+		panic(err)
+	}
+
 	var request CreateRoleRequest
 
-	err := util.ValidateRequest(c, &request)
+	err = util.ValidateRequest(c, &request)
 	if err != nil {
 		panic(err)
 	}

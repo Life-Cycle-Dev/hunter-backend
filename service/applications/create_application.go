@@ -14,9 +14,15 @@ type CreateApplicationRequest struct {
 }
 
 func (a applicationsService) HandlerCreateApplication(c *fiber.Ctx) error {
+	permissions := c.Locals("permissions").([]string)
+	err := util.CheckAllow(permissions, "application-modify")
+	if err != nil {
+		panic(err)
+	}
+
 	var request CreateApplicationRequest
 
-	err := util.ValidateRequest(c, &request)
+	err = util.ValidateRequest(c, &request)
 	if err != nil {
 		panic(err)
 	}

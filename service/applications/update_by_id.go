@@ -13,10 +13,16 @@ type UpdateApplicationRequest struct {
 }
 
 func (a applicationsService) HandlerUpdateApplicationById(c *fiber.Ctx) error {
+	permissions := c.Locals("permissions").([]string)
+	err := util.CheckAllow(permissions, "application-modify")
+	if err != nil {
+		panic(err)
+	}
+
 	id := c.Params("id")
 	var request UpdateApplicationRequest
 
-	err := util.ValidateRequest(c, &request)
+	err = util.ValidateRequest(c, &request)
 	if err != nil {
 		panic(err)
 	}

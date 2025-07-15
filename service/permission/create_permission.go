@@ -12,9 +12,15 @@ type CreatePermissionRequest struct {
 }
 
 func (p permissionService) HandlerCreatePermission(c *fiber.Ctx) error {
+	permissions := c.Locals("permissions").([]string)
+	err := util.CheckAllow(permissions, "permission-modify")
+	if err != nil {
+		panic(err)
+	}
+
 	var request CreatePermissionRequest
 
-	err := util.ValidateRequest(c, &request)
+	err = util.ValidateRequest(c, &request)
 	if err != nil {
 		panic(err)
 	}

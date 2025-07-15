@@ -12,10 +12,15 @@ type UpdateRoleRequest struct {
 }
 
 func (p permissionService) HandlerUpdateRole(c *fiber.Ctx) error {
-	id := c.Params("id")
+	userPermissions := c.Locals("permissions").([]string)
+	err := util.CheckAllow(userPermissions, "role-modify")
+	if err != nil {
+		panic(err)
+	}
 
+	id := c.Params("id")
 	var request UpdateRoleRequest
-	err := util.ValidateRequest(c, &request)
+	err = util.ValidateRequest(c, &request)
 	if err != nil {
 		panic(err)
 	}

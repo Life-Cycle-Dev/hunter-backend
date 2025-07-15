@@ -1,8 +1,17 @@
 package userService
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+	"hunter-backend/util"
+)
 
 func (u userService) HandlerGetUser(c *fiber.Ctx) error {
+	userPermissions := c.Locals("permissions").([]string)
+	err := util.CheckAllow(userPermissions, "user-view")
+	if err != nil {
+		panic(err)
+	}
+
 	id := c.Params("id")
 
 	user, err := u.userRepository.FindById(id)
