@@ -12,7 +12,10 @@ func (u userService) HandlerGetUser(c *fiber.Ctx) error {
 
 	role, err := u.roleRepository.FindById(user.RoleId)
 	if err != nil {
-		panic(err)
+		role, err = u.roleRepository.FindByMapping("user")
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	permissions, err := u.permissionRepository.GetByRoleId(role.ID)
