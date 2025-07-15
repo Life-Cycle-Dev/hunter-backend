@@ -29,7 +29,7 @@ func (u userService) HandlerUpdateUserById(c *fiber.Ctx) error {
 		panic(err)
 	}
 
-	existingRole, err := u.roleRepository.FindById(user.RoleId)
+	existingRole, err := u.roleRepository.FindById(request.RoleId)
 	if existingRole.ID == "" {
 		panic(errors.New("role not found"))
 	}
