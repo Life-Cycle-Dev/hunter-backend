@@ -10,11 +10,12 @@ import (
 )
 
 type JsonWebTokenRepository interface {
-	createJsonWebToken(token *entity.JwtToken, tokenType entity.JsonTokenType, user *entity.Users, ref string) (*entity.JsonWebToken, error)
 	GetTokenById(jwtId string) (*entity.JsonWebToken, error)
 	GenerateToken(userEnt *entity.Users) (*entity.JwtTokenResponse, error)
 	GenerateAccessToken(user *entity.Users, ref string) (string, error)
+	RevokeToken(ref string) error
 
+	createJsonWebToken(token *entity.JwtToken, tokenType entity.JsonTokenType, user *entity.Users, ref string) (*entity.JsonWebToken, error)
 	generateRefreshToken(userEnt *entity.Users) (string, *entity.JsonWebToken, error)
 }
 
@@ -22,6 +23,22 @@ type jsonWebTokenRepository struct {
 	db                  *gorm.DB
 	config              config.AppConfig
 	encryptorRepository EncryptorRepository
+}
+
+func (j jsonWebTokenRepository) RevokeToken(ref string) error {
+	if err := j.db.Model(&entity.JsonWebToken{}).
+		Where("id = ? AND type = ?", ref, entity.JsonWebTokenRefreshToken).
+		Update("revoked", true).Error; err != nil {
+		return err
+	}
+
+	if err := j.db.Model(&entity.JsonWebToken{}).
+		Where("ref = ? AND type = ?", ref, entity.JsonWebTokenAccessToken).
+		Update("revoked", true).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (j jsonWebTokenRepository) GetTokenById(jwtId string) (*entity.JsonWebToken, error) {

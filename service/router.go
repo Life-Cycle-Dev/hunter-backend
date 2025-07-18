@@ -32,6 +32,9 @@ func InitRouter(server *fiber.App) {
 	authProtected := server.Group("/auth/me", middleware.RequireAuth(db, appConfig, entity.JsonWebTokenAccessToken))
 	authProtected.Get("/", auth.HandlerGetUserInfo)
 
+	authLogoutProtected := server.Group("/auth/logout", middleware.RequireAuth(db, appConfig, entity.JsonWebTokenAccessToken))
+	authLogoutProtected.Post("/", auth.HandlerLogout)
+
 	refreshProtected := server.Group("/auth/refresh", middleware.RequireAuth(db, appConfig, entity.JsonWebTokenRefreshToken))
 	refreshProtected.Post("/", auth.HandlerRefreshAccessToken)
 

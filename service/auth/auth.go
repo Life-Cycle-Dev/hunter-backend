@@ -13,6 +13,7 @@ type AuthService interface {
 	HandlerVerifyEmail(c *fiber.Ctx) error
 	HandlerGetUserInfo(c *fiber.Ctx) error
 	HandlerRefreshAccessToken(c *fiber.Ctx) error
+	HandlerLogout(c *fiber.Ctx) error
 }
 
 type authService struct {
